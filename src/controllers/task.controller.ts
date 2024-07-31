@@ -5,7 +5,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const createTask = asyncHandler(async function create(req, res, next) {
   const user = req.user;
-  console.log(typeof user, user);
   if (!user) {
     throw new ApiError(401, "Unauthorized access!");
   }
@@ -33,7 +32,6 @@ export const createTask = asyncHandler(async function create(req, res, next) {
 
 export const getAllTasks = asyncHandler(async function getTask(req, res, next) {
   const user = req.user;
-  console.log(typeof user, user);
   if (!user) {
     throw new ApiError(401, "Unauthorized access!");
   }
@@ -82,7 +80,6 @@ export const updateTask = asyncHandler(async function update(req, res, next) {
   if (!updateTask) {
     throw new ApiError(500, "Something went wrong while deleting task");
   }
-  console.log(updateTask);
   return res
     .status(201)
     .json(new ApiResponse(200, "Task deleted successfully", updateTask));

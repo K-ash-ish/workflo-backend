@@ -1,13 +1,13 @@
 import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import * as jose from "jose";
 
 interface IUser extends Document {
   email: string;
   password: string;
   name: string;
   isPasswordCorrect: (password: string) => Promise<boolean>;
-  generateAccessToken: () => string;
+  generateAccessToken: () => Promise<string>;
   verifyAccessToken: (accessToken: string) => string;
 }
 
@@ -45,17 +45,20 @@ userSchema.methods.isPasswordCorrect = async function checkPassword(
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.generateAccessToken = function genAccessToken() {
+userSchema.methods.generateAccessToken = async function genAccessToken() {
   if (!process.env.ACCESS_TOKEN_SECRET) {
     throw new Error("Missing env ACCESS TOKEN");
   }
-  return jwt.sign(
-    {
-      _id: this._id,
-      name: this.name,
-    },
-    process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "1d" }
-  );
+  const secret = new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET);
+
+  const alg = "HS256";
+  const jwt = await new jose.SignJWT({ _id: this.id, name: this.name })
+    .setProtectedHeader({ alg })
+    .setIssuedAt()
+    .setIssuer("urn:example:issuer")
+    .setAudience("urn:example:audience")
+    .setExpirationTime("1d")
+    .sign(secret);
+  return jwt;
 };
 export const User = mongoose.model("User", userSchema);
