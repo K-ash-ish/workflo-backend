@@ -1,8 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const userSchema = new mongoose.Schema(
+interface IUser extends Document {
+  email: string;
+  password: string;
+  name: string;
+  isPasswordCorrect: (password: string) => Promise<boolean>;
+  generateAccessToken: () => string;
+  verifyAccessToken: (accessToken: string) => string;
+}
+
+const userSchema = new mongoose.Schema<IUser>(
   {
     email: {
       type: String,
@@ -37,7 +46,7 @@ userSchema.methods.isPasswordCorrect = async function checkPassword(
 };
 
 userSchema.methods.generateAccessToken = function genAccessToken() {
-  if (!process.env.ACCESS_TOKEN) {
+  if (!process.env.ACCESS_TOKEN_SECRET) {
     throw new Error("Missing env ACCESS TOKEN");
   }
   return jwt.sign(
@@ -45,9 +54,17 @@ userSchema.methods.generateAccessToken = function genAccessToken() {
       _id: this._id,
       name: this.name,
     },
-    process.env.ACCESS_TOKEN,
+    process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "1d" }
   );
+};
+userSchema.methods.verifyAccessToken = function verifyToken(
+  accessToken: string
+) {
+  if (!process.env.ACCESS_TOKEN_SECRET) {
+    throw new Error("Missing env ACCESS TOKEN");
+  }
+  return jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
 };
 
 export const User = mongoose.model("User", userSchema);
