@@ -58,13 +58,4 @@ userSchema.methods.generateAccessToken = function genAccessToken() {
     { expiresIn: "1d" }
   );
 };
-userSchema.methods.verifyAccessToken = function verifyToken(
-  accessToken: string
-) {
-  if (!process.env.ACCESS_TOKEN_SECRET) {
-    throw new Error("Missing env ACCESS TOKEN");
-  }
-  return jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
-};
-
 export const User = mongoose.model("User", userSchema);
