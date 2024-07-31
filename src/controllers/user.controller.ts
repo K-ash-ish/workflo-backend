@@ -70,12 +70,8 @@ export const logoutUser = asyncHandler(async function logout(req, res, next) {
   if (!accessToken) {
     throw new ApiError(400, "Something went wrong no access token found");
   }
-
-  const options = {
-    httpOnly: true,
-    secure: true,
-    maxAge: Date.now() + 7 * 86400 * 1000,
-  };
+  console.log("00:45");
+  const options = {};
   return res
     .status(200)
     .clearCookie("accessToken", options)
