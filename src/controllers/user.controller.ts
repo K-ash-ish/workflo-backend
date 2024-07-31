@@ -37,7 +37,7 @@ export const registerUser = asyncHandler(async function register(
 
 export const loginUser = asyncHandler(async function login(req, res, next) {
   const { email, password } = req.body;
-  console.log(email, password);
+  // console.log(email, password);
   if ([email, password].some((field) => field.trim() === "")) {
     throw new ApiError(409, "All fields are requireds");
   }
@@ -56,7 +56,6 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
     httpOnly: true,
     secure: true,
   };
-  console.log(accessToken, data);
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -65,8 +64,9 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
 
 export const logoutUser = asyncHandler(async function logout(req, res, next) {
   const { accessToken } = req.cookies;
+  console.log(accessToken);
   if (!accessToken) {
-    throw new ApiError(400, "Something went wrong");
+    throw new ApiError(400, "Something went wrong no access token found");
   }
 
   const options = {
