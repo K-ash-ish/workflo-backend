@@ -27,6 +27,7 @@ export const registerUser = asyncHandler(async function register(
   const options = {
     httpOnly: true,
     secure: true,
+    maxAge: Date.now() + 7 * 86400 * 1000,
   };
 
   return res
@@ -55,6 +56,7 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
   const options = {
     httpOnly: true,
     secure: true,
+    maxAge: Date.now() + 7 * 86400 * 1000,
   };
   return res
     .status(200)
@@ -72,6 +74,7 @@ export const logoutUser = asyncHandler(async function logout(req, res, next) {
   const options = {
     httpOnly: true,
     secure: true,
+    maxAge: Date.now() + 7 * 86400 * 1000,
   };
   return res
     .status(200)
