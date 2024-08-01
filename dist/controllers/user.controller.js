@@ -46,9 +46,10 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
     const accessToken = await user.generateAccessToken();
     const options = {
         httpOnly: true,
-        secure: true,
+        // secure: true,
         maxAge: 7 * 86400 * 1000,
         sameSite: "none",
+        // domain:'.onrender.com'
     };
     return res
         .status(200)
