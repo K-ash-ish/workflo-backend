@@ -47,7 +47,8 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
     const options = {
         httpOnly: true,
         secure: true,
-        maxAge: Date.now() + 7 * 86400 * 1000,
+        maxAge: 7 * 86400 * 1000,
+        sameSite: "none",
     };
     return res
         .status(200)
@@ -61,7 +62,11 @@ export const logoutUser = asyncHandler(async function logout(req, res, next) {
         throw new ApiError(400, "Something went wrong no access token found");
     }
     console.log("00:45");
-    const options = {};
+    const options = {
+        httpOnly: true,
+        secure: true,
+        maxAge: 7 * 86400 * 1000,
+    };
     return res
         .status(200)
         .clearCookie("accessToken", options)
