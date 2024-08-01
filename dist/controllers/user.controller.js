@@ -48,7 +48,7 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
         httpOnly: true,
         // secure: true,
         maxAge: 7 * 86400 * 1000,
-        sameSite: "none",
+        // sameSite: "none" as const,
         // domain:'.onrender.com'
     };
     return res
