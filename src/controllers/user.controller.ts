@@ -27,7 +27,8 @@ export const registerUser = asyncHandler(async function register(
   const options = {
     httpOnly: true,
     secure: true,
-    maxAge: Date.now() + 7 * 86400 * 1000,
+    maxAge: 7 * 86400 * 1000,
+    sameSite: "none" as const,
   };
 
   return res

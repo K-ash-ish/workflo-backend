@@ -11,6 +11,7 @@ app.use(cors({
         "https://crework-assignment-git-main-kashishs-projects-e2fda6bb.vercel.app",
         "https://crework-assignment-lyart.vercel.app",
     ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
