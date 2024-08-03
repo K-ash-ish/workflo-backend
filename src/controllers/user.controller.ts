@@ -29,6 +29,8 @@ export const registerUser = asyncHandler(async function register(
     secure: true,
     maxAge: 7 * 86400 * 1000,
     sameSite: "none" as const,
+
+    domain: "crework-assignment-backend.onrender.com",
   };
 
   return res
@@ -59,7 +61,7 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
     secure: true,
     maxAge: 7 * 86400 * 1000,
     sameSite: "none" as const,
-    // domain:'.onrender.com'
+    domain: "crework-assignment-backend.onrender.com",
   };
   return res
     .status(200)
@@ -79,6 +81,8 @@ export const logoutUser = asyncHandler(async function logout(req, res, next) {
     secure: true,
     maxAge: 7 * 86400 * 1000,
     sameSite: "none" as const,
+
+    domain: "crework-assignment-backend.onrender.com",
   };
   return res
     .status(200)
