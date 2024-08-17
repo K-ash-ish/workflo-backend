@@ -79,7 +79,6 @@ export const logoutUser = asyncHandler(async function logout(req, res, next) {
     secure: true,
     maxAge: 7 * 86400 * 1000,
     sameSite: "none" as const,
-
     domain: ".assignment.wiki",
   };
   return res
