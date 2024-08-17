@@ -12,6 +12,9 @@ const port = process.env.PORT || 8080;
 
 connectDB()
   .then(() => {
+    app.get("/", (req, res) => {
+      res.send("Hello");
+    });
     app.on("error", (error) => {
       console.error("Error: ", error);
     });

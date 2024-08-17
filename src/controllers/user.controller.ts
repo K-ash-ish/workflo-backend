@@ -30,7 +30,7 @@ export const registerUser = asyncHandler(async function register(
     maxAge: 7 * 86400 * 1000,
     sameSite: "none" as const,
 
-    domain: "crework-assignment-backend.onrender.com",
+    domain: ".assignment.wiki",
   };
 
   return res
@@ -41,7 +41,6 @@ export const registerUser = asyncHandler(async function register(
 
 export const loginUser = asyncHandler(async function login(req, res, next) {
   const { email, password } = req.body;
-  // console.log(email, password);
   if ([email, password].some((field) => field.trim() === "")) {
     throw new ApiError(409, "All fields are requireds");
   }
@@ -58,31 +57,30 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
   const accessToken = await user.generateAccessToken();
   const options = {
     httpOnly: true,
-    secure: true,
     maxAge: 7 * 86400 * 1000,
+    secure: true,
     sameSite: "none" as const,
-    domain: "crework-assignment-backend.onrender.com",
+    domain: ".assignment.wiki",
   };
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
+    .header("Referrer-Policy", "no-referrer-when-downgrade")
     .json(new ApiResponse(200, "Login succesfull", data));
 });
 
 export const logoutUser = asyncHandler(async function logout(req, res, next) {
   const { accessToken } = req.cookies;
-  console.log(accessToken);
   if (!accessToken) {
     throw new ApiError(400, "Something went wrong no access token found");
   }
-  console.log("00:45");
   const options = {
     httpOnly: true,
     secure: true,
     maxAge: 7 * 86400 * 1000,
     sameSite: "none" as const,
 
-    domain: "crework-assignment-backend.onrender.com",
+    domain: ".assignment.wiki",
   };
   return res
     .status(200)
