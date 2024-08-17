@@ -30,7 +30,8 @@ export const registerUser = asyncHandler(async function register(
     maxAge: 7 * 86400 * 1000,
     sameSite: "none" as const,
 
-    domain: ".assignment.wiki",
+    domain: process.env.DOMAIN,
+    // domain: ".assignment.wiki",
   };
 
   return res
@@ -60,7 +61,9 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
     maxAge: 7 * 86400 * 1000,
     secure: true,
     sameSite: "none" as const,
-    domain: ".assignment.wiki",
+    // domain: ".assignment.wiki",
+
+    domain: process.env.DOMAIN,
   };
   return res
     .status(200)
@@ -79,7 +82,8 @@ export const logoutUser = asyncHandler(async function logout(req, res, next) {
     secure: true,
     maxAge: 7 * 86400 * 1000,
     sameSite: "none" as const,
-    domain: ".assignment.wiki",
+    // domain: ".assignment.wiki",
+    domain: process.env.DOMAIN,
   };
   return res
     .status(200)
