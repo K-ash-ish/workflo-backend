@@ -52,7 +52,7 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
   }
   const isValidPassword = await user.isPasswordCorrect(password);
   if (!isValidPassword) {
-    return new ApiError(401, "Enter correct password");
+    throw new ApiError(401, "Enter correct password");
   }
   const data = { id: user._id, name: user.name };
   const accessToken = await user.generateAccessToken();
