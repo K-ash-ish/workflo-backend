@@ -82,5 +82,5 @@ export const updateTask = asyncHandler(async function update(req, res, next) {
   }
   return res
     .status(201)
-    .json(new ApiResponse(200, "Task deleted successfully", updateTask));
+    .json(new ApiResponse(200, "Task updated successfully", updateTask));
 });
