@@ -32,7 +32,7 @@ export const verifyJWT = asyncHandler(async function verifyToken(
   }
 
   const user = await User.findById(decodedToken?._id).select(
-    "-password -email -name"
+    "-password -email "
   );
   if (!user) {
     throw new ApiError(401, "Unauthorized action");

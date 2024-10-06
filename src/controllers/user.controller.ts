@@ -90,3 +90,16 @@ export const logoutUser = asyncHandler(async function logout(req, res, next) {
     .clearCookie("accessToken", options)
     .json(new ApiResponse(200, "Logout successfull"));
 });
+
+export const verifyUserToken = asyncHandler(async function auth(
+  req,
+  res,
+  next
+) {
+  if (!req.user) {
+    throw new ApiError(401, "Unauthorized action");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User authenticated", req.user));
+});
