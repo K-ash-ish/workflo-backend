@@ -78,7 +78,7 @@ export const updateTask = asyncHandler(async function update(req, res, next) {
     { new: true }
   );
   if (!updateTask) {
-    throw new ApiError(500, "Something went wrong while deleting task");
+    throw new ApiError(500, "Something went wrong while updating task");
   }
   return res
     .status(201)
