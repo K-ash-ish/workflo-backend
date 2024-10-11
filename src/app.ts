@@ -3,6 +3,7 @@
 import express from "express";
 import cors from "cors";
 import cookieparser from "cookie-parser";
+
 const app = express();
 
 const corsoptions = {};
@@ -34,8 +35,11 @@ app.use(cookieparser());
 
 import userrouter from "./routes/user.route.js";
 import taskrouter from "./routes/task.route.js";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
 
 app.use("/api/user", userrouter);
 app.use("/api/task", taskrouter);
+
+app.use(errorHandler);
 
 export { app };

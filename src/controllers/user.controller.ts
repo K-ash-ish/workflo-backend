@@ -48,11 +48,11 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new ApiError(404, "User does not exist");
+    throw new ApiError(404, "Check your credentials");
   }
   const isValidPassword = await user.isPasswordCorrect(password);
   if (!isValidPassword) {
-    throw new ApiError(401, "Enter correct password");
+    throw new ApiError(401, "Check your credentials");
   }
   const data = { id: user._id, name: user.name };
   const accessToken = await user.generateAccessToken();
@@ -61,8 +61,6 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
     maxAge: 7 * 86400 * 1000,
     secure: true,
     sameSite: "none" as const,
-    // domain: ".assignment.wiki",
-
     domain: process.env.DOMAIN,
   };
   return res
@@ -75,7 +73,7 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
 export const logoutUser = asyncHandler(async function logout(req, res, next) {
   const { accessToken } = req.cookies;
   if (!accessToken) {
-    throw new ApiError(400, "Something went wrong no access token found");
+    throw new ApiError(400, "Something went wrong ");
   }
   const options = {
     httpOnly: true,

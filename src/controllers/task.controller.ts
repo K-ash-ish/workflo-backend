@@ -27,7 +27,7 @@ export const createTask = asyncHandler(async function create(req, res, next) {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, "Task create successfully", task));
+    .json(new ApiResponse(201, "Task created successfully", task));
 });
 
 export const getAllTasks = asyncHandler(async function getTask(req, res, next) {
@@ -52,7 +52,7 @@ export const deleteTask = asyncHandler(async function delte(req, res, next) {
   const { id } = req.body;
   const deleteTask = await Task.deleteOne({ _id: id });
   if (!deleteTask) {
-    throw new ApiError(500, "Something went wrong while deleting task");
+    throw new ApiError(500, "Something went wrong while deleting the task");
   }
   return res
     .status(201)
@@ -78,7 +78,7 @@ export const updateTask = asyncHandler(async function update(req, res, next) {
     { new: true }
   );
   if (!updateTask) {
-    throw new ApiError(500, "Something went wrong while updating task");
+    throw new ApiError(500, "Something went wrong while updating the task");
   }
   return res
     .status(201)
