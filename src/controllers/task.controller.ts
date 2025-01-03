@@ -50,7 +50,7 @@ export const deleteTask = asyncHandler(async function delte(req, res, next) {
     throw new ApiError(401, "Unauthorized access!");
   }
   const { id } = req.body;
-  const deleteTask = await Task.deleteOne({ _id: id });
+  const deleteTask = await Task.findByIdAndDelete({ _id: id });
   if (!deleteTask) {
     throw new ApiError(500, "Something went wrong while deleting the task");
   }
