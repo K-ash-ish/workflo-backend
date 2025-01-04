@@ -1,4 +1,5 @@
 import { Task } from "../models/task.model.js";
+import { Tasks } from "../types/tasks.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -64,18 +65,23 @@ export const updateTask = asyncHandler(async function update(req, res, next) {
   if (!user) {
     throw new ApiError(401, "Unauthorized access!");
   }
-  const { id, title, status, deadline, priority, description, customField } =
-    req.body;
+  const { id } = req.body;
+
+  const valuesToUpdate = Object.keys(req.body).reduce(
+    (acc: Partial<Tasks>, key) => {
+      if (req.body[key] && key !== "id") {
+        acc[key] = req.body[key];
+      }
+      return acc;
+    },
+    {}
+  );
   const updateTask = await Task.findByIdAndUpdate(
     id,
+    { $set: valuesToUpdate },
     {
-      title,
-      status,
-      deadline,
-      priority,
-      description,
-    },
-    { new: true }
+      new: true,
+    }
   );
   if (!updateTask) {
     throw new ApiError(500, "Something went wrong while updating the task");
