@@ -6,6 +6,7 @@ interface IUser extends Document {
   email: string;
   password: string;
   name: string;
+  active: boolean;
   isPasswordCorrect: (password: string) => Promise<boolean>;
   generateAccessToken: () => Promise<string>;
   verifyAccessToken: (accessToken: string) => string;
@@ -27,6 +28,10 @@ const userSchema = new mongoose.Schema<IUser>(
     password: {
       type: String,
       required: true,
+    },
+    active: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

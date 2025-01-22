@@ -6,8 +6,6 @@ import cookieparser from "cookie-parser";
 
 const app = express();
 
-const corsoptions = {};
-
 app.set("trust proxy", 1);
 
 app.use(

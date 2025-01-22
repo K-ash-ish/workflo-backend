@@ -1,7 +1,59 @@
+import { redisClient } from "../config/redis.config.js";
 import { User } from "../models/user.model.js";
+import { EmailService } from "../services/emailService.js";
+import { setOTP } from "../services/otpService.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { generateOTP } from "../utils/otpGenerator.js";
+
+export const verifyOTP = asyncHandler(async function verify(req, res, next) {
+  const { otp } = req.body;
+  if (!req.user) {
+    throw new ApiError(401, "Unauthorized action");
+  }
+
+  const storedOTP = await redisClient.get(req.user._id.toString());
+
+  if (storedOTP?.toString() !== otp.toString()) {
+    return res.status(201).json(new ApiResponse(422, "Invalid OTP!"));
+  }
+
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      active: true,
+    },
+    { new: true }
+  );
+
+  await redisClient.del(req.user._id.toString());
+
+  return res.status(201).json(new ApiResponse(200, "Verification Complete"));
+});
+
+export const resendOTP = asyncHandler(async function resend(req, res, next) {
+  if (!req.user) {
+    throw new ApiError(401, "Unauthorized action");
+  }
+
+  const isUserExist = await User.findById(req.user._id).select("-password");
+  if (!isUserExist) throw new ApiError(401, "Something went wrong");
+
+  const otp = generateOTP();
+
+  await setOTP(req.user._id.toString(), otp);
+  const emailService = new EmailService(
+    isUserExist.email,
+    `Your OTP is ${otp}. Valid for 2 minutes.`
+  );
+
+  await emailService.sendVerificationEmail();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "New OTP send successfully"));
+});
 
 export const registerUser = asyncHandler(async function register(
   req,
@@ -20,20 +72,28 @@ export const registerUser = asyncHandler(async function register(
   const user = await User.create({ email, password, name });
   const createdUser = await User.findById(user._id).select("-password");
 
-  if (!createdUser) {
+  if (!createdUser || !createdUser._id) {
     throw new ApiError(500, "Something went wrong while registering");
   }
+
+  const otp = generateOTP();
+  const emailService = new EmailService(
+    createdUser.email,
+    `Your OTP is ${otp}. Valid for 2 minutes.`
+  );
+  await emailService.sendVerificationEmail();
+
+  await setOTP(createdUser._id.toString(), otp);
+
   const accessToken = await user.generateAccessToken();
   const options = {
     httpOnly: true,
     secure: true,
     maxAge: 7 * 86400 * 1000,
     sameSite: "none" as const,
-
     domain: process.env.DOMAIN,
     // domain: ".assignment.wiki",
   };
-
   return res
     .status(201)
     .cookie("accessToken", accessToken, options)
@@ -54,7 +114,7 @@ export const loginUser = asyncHandler(async function login(req, res, next) {
   if (!isValidPassword) {
     throw new ApiError(401, "Check your credentials");
   }
-  const data = { id: user._id, name: user.name };
+  const data = { id: user._id, name: user.name, acitve: user.active };
   const accessToken = await user.generateAccessToken();
   const options = {
     httpOnly: true,
