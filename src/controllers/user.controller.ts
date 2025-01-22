@@ -19,17 +19,31 @@ export const verifyOTP = asyncHandler(async function verify(req, res, next) {
     return res.status(201).json(new ApiResponse(422, "Invalid OTP!"));
   }
 
-  await User.findByIdAndUpdate(
+  const userVerified = await User.findByIdAndUpdate(
     req.user._id,
     {
       active: true,
     },
     { new: true }
   );
+  if (!userVerified) {
+    throw new ApiError(404, "Something went wrong");
+  }
+  const accessToken = await userVerified.generateAccessToken();
+  const options = {
+    httpOnly: true,
+    maxAge: 7 * 86400 * 1000,
+    secure: true,
+    sameSite: "none" as const,
+    domain: process.env.DOMAIN,
+  };
 
   await redisClient.del(req.user._id.toString());
 
-  return res.status(201).json(new ApiResponse(200, "Verification Complete"));
+  return res
+    .status(201)
+    .cookie("accessToken", accessToken, options)
+    .json(new ApiResponse(200, "Verification Complete"));
 });
 
 export const resendOTP = asyncHandler(async function resend(req, res, next) {
@@ -38,6 +52,7 @@ export const resendOTP = asyncHandler(async function resend(req, res, next) {
   }
 
   const isUserExist = await User.findById(req.user._id).select("-password");
+
   if (!isUserExist) throw new ApiError(401, "Something went wrong");
 
   const otp = generateOTP();

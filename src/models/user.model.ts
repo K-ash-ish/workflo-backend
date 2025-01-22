@@ -57,7 +57,11 @@ userSchema.methods.generateAccessToken = async function genAccessToken() {
   const secret = new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET);
 
   const alg = "HS256";
-  const jwt = await new jose.SignJWT({ _id: this.id, name: this.name })
+  const jwt = await new jose.SignJWT({
+    _id: this.id,
+    name: this.name,
+    active: this.active,
+  })
     .setProtectedHeader({ alg })
     .setIssuedAt()
     .setIssuer("urn:example:issuer")
